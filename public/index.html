@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <a href="show_room.html" target="_blank">roomlist</a>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -35,6 +36,10 @@
             <label>Room</label>
             <input type="text" placeholder="Enter room name" id="roomName" name="roomName">
           </div>
+          <div class="field">
+            <label>theme</label>
+            <input type="text" placeholder="Enter room theme" id="theme" name="theme">
+          </div>
         </div>
         <br>
         <div class="ui buttons">
@@ -60,6 +65,7 @@
       <!--canvas-->
       
        <canvas id="myCanvas" width="1000" height="500" style="border:2px solid #d3d3d3;"></canvas>
+       <button class="ui inverted teal button">leave room</button>
        <form action="/somewhere/to/upload" enctype="multipart/form-data"><!--上傳圖片的表單-->
        <input id="uploadImage" type="file" name="photo" accept="image/*"/>
        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
@@ -93,7 +99,7 @@
       <img class="ui centered medium image" src="images/image.png">
     </div>
   </script>
-
+  
    <!-- Chat Content Template -->
 <script id="chat-content-template" type="text/x-handlebars-template">
   {{#each messages}}

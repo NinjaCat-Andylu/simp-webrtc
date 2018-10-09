@@ -110,26 +110,36 @@ window.addEventListener('load', () => {
         postMessage(message);
       }
     });
+  socket.on('Room2', function(state,roomName,username){//所有畫面一起清除
+    state2=state;
+    roomName2=roomName;
+    username2=username;
+    //console.log(username+" "+state+" "+roomName);
+  });
   };
 
   // Register new Chat Room
   const createRoom = (roomName) => {
     // eslint-disable-next-line no-console
-    console.info(`Creating new room: ${roomName}`);
+    //console.info(`Creating new room: ${roomName}`);
     webrtc.createRoom(roomName, (err, name) => {
       formEl.form('clear');
       showChatRoom(name);
       postMessage(`${username} created chatroom`);
+    socket.emit('roomstate','Create',roomName,username);
+    //console.log(username+" "+'Create'+" "+roomName);
     });
   };
 
   // Join existing Chat Room
   const joinRoom = (roomName) => {
     // eslint-disable-next-line no-console
-    console.log(`Joining Room: ${roomName}`);
+    //console.log(`Joining Room: ${roomName}`);
     webrtc.joinRoom(roomName);
     showChatRoom(roomName);
     postMessage(`${username} joined chatroom`);
+  socket.emit('roomstate','Join',roomName,username);
+  //console.log(username+" "+'join'+" "+roomName);
   };
 
   // Receive message from remote user
