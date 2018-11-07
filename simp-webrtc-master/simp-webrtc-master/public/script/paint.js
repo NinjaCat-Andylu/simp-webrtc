@@ -8,10 +8,8 @@ var current = {};
 var color1;
 var size = 4;
 var clearRect = false;
-var state2;
-var roomName2;
-var username2;
-//§W∂«πœ§˘™∫µ{¶°
+
+//‰∏äÂÇ≥ÂúñÁâáÁöÑÁ®ãÂºè
 var ls = window.localStorage,
   photo = document.getElementById('uploadImage'),
   fileReader = new FileReader(),
@@ -42,7 +40,6 @@ var ls = window.localStorage,
     var file = this.files[0];  
     return file && fileReader.readAsDataURL(file); 
   }); 
-
 // upload image
 const color = ["red","blue","yellow","black"];
 var drawmode = false;
@@ -59,18 +56,20 @@ for (let i=0 ; i<4 ; i++ )
  ctx.font = "12px Arial";
  ctx.fillStyle = "black";
  ctx.fillText("clear", 20 , 215);
- ctx.fillText("reload", 20 , 265);
 window.addEventListener('load',function(){
     var canvas=document.querySelector('#myCanvas');
-    canvas.addEventListener("click", getcolor, false);//øÔ√C¶‚
+    canvas.addEventListener("click", getcolor, false);//ÈÅ∏È°èËâ≤
     canvas.addEventListener('mousedown',mouseDown);
-  //canvas.addEventListener('mousemove',mouseMove);
+   // canvas.addEventListener('mousemove',mouseMove);
     canvas.addEventListener('mouseup',mouseUp);
     canvas.addEventListener('mousemove', throttle(onMouseMove, 10), false);
+
 });
 
+socket.on('drawing', senddata);
 window.addEventListener('resize', onResize, false);
 onResize();
+
 function getcolor(e) {
     var xPosition = event.pageX;
     var yPosition = event.pageY;
@@ -86,14 +85,8 @@ function getcolor(e) {
   if(xPosition > xCanvas && xPosition < 60+xCanvas && yPosition > 200+yCanvas && yPosition < 250+yCanvas)
   {
     console.log('clear');
-    ctx.clearRect(55, 0, 950 ,500 );
+    ctx.clearRect(xCanvas+50, yCanvas+0, 950 ,500 );
     socket.emit('pressed', 38);
-  socket.on('PlayersMoving', function(key){//©“¶≥µe≠±§@∞_≤M∞£
-    ctx.clearRect(55, 0, 950 ,500 );
-  });
-  }
-  if(xPosition > xCanvas && xPosition < 60+xCanvas && yPosition > 250+yCanvas && yPosition < 300+yCanvas)
-  {
     var rw = img.width / c.width; 
     var rh = img.height / c.height;
     
@@ -111,16 +104,27 @@ function getcolor(e) {
       var y = (c.height - newh) / 2;  
     drawImage(img, x, y, neww, newh);
   }
-    socket.on('Room2', function(state,roomName,username){//©“¶≥µe≠±§@∞_≤M∞£
-    state2=state;
-    roomName2=roomName;
-    username2=username;
-    console.log(username2+" "+state2+" "+roomName2);
-  });
-  console.log(username2+" "+state2+" "+roomName2);
+  socket.on('PlayersMoving', function(key){//ÊâÄÊúâÁï´Èù¢‰∏ÄËµ∑Ê∏ÖÈô§
+    ctx.clearRect(xCanvas+50, yCanvas+0, 950 ,500 );
+    var rw = img.width / c.width; 
+    var rh = img.height / c.height;
+    
+      if (rw > rh)
+        {
+          newh = Math.round(img.height / rw);
+          neww = c.width;
+        }
+      else
+        {
+          neww = Math.round(img.width / rh);
+          newh = c.height;
+        }  
+      var x = (c.width - neww) / 2;
+      var y = (c.height - newh) / 2;  
+    drawImage(img, x, y, neww, newh);
+    });
   return colorT;
 }
-
 function mouseDown(e){
   drawmode = true;
   clearRect = false;
@@ -139,51 +143,44 @@ function mouseDown(e){
 */
 }
 function mouseUp(e) {
-
   color1 = getcolor(e);
   console.log(color[color1]);
   //console.log("current  " + current.x + "   " + current.y + " event " + event.pageX + "  " + event.pageY);
-  drawLine(current.x, current.y-800, event.pageX, event.pageY-800, color1, size, true);
+  drawLine(current.x, current.y, event.pageX, event.pageY, color1, size, true);
   ctx.closePath();
   drawmode = false ;
 
 }
 function onMouseMove(e){
   var xCanvas = myCanvas.offsetLeft - myCanvas.scrollLeft + myCanvas.clientLeft;
- // console.log("drawmode"+drawmode);
+  console.log("drawmode"+drawmode);
   if(event.pageX < 50 + xCanvas  )
     drawmode = false;
    if(event.pageX > 50+xCanvas && drawmode== true)
     {
     //console.log("current  " + current.x + "   " + current.y + " event " + event.pageX + "  " + event.pageY);
-    drawLine(current.x, current.y-800, event.pageX, event.pageY-800, color1, size, true);
+    drawLine(current.x, current.y, event.pageX, event.pageY, color1, size, true);
     current.x = event.pageX;
     current.y = event.pageY;
     }
   clearRect = false;
   }
 
+
  function senddata(data){
   //console.log(data.color);
   drawLine(data.x0 , data.y0 , data.x1 , data.y1 , data.color ,data.size);
  }
- 
- console.log('  paint js  ');
- console.log(roomName2);
-//socket.on('drawing', senddata, roomName2);
+
 function drawLine(x0, y0, x1, y1, colorP, size, emit){
-  //if(state2=='Create'){
-    socket.emit('drawing', senddata, roomName2);
-    console.log(roomName2);
     ctx.beginPath();
-    //console.log(x0 + "  " + y0 + "  " + x1 + "  " + y1 +"  "+color[colorP])
+    console.log(x0 + "  " + y0 + "  " + x1 + "  " + y1)
     ctx.moveTo(x0, y0);
     ctx.lineTo(x1, y1);
     //console.log(color[colorP]);
     ctx.strokeStyle = color[colorP];
     ctx.lineWidth = size;
     ctx.stroke();
-  //}
   if (!emit) { return; }
     socket.emit('drawing', {
       x0: x0 ,
@@ -207,7 +204,7 @@ function mouseMove(e) {
 */
 // image
 
-function drawImage(img, x, y, neww, newh) {//πœ§˘≈„•‹
+function drawImage(img, x, y, neww, newh) {//ÂúñÁâáÈ°ØÁ§∫
    var dataUrl;  
    var width = c.width;  
    ctx.drawImage(img, x, y, neww, newh);   

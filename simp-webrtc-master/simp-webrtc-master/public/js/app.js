@@ -1,6 +1,5 @@
 window.addEventListener('load', () => {
   // Chat platform
- 
   const chatTemplate = Handlebars.compile($('#chat-template').html());
   const chatContentTemplate = Handlebars.compile($('#chat-content-template').html());
   const chatEl = $('#chat');
@@ -13,9 +12,7 @@ window.addEventListener('load', () => {
   const localVideoEl = $('#local-video');
   // local canvas
   //const locaCanvasE1 = $('#myCanvas');
-	var state3;
-	var roomName3;
-	var userName3;
+
   // Remote Videos
   const remoteVideoTemplate = Handlebars.compile($('#remote-video-template').html());
   const remoteVideosEl = $('#remote-videos');
@@ -29,14 +26,9 @@ window.addEventListener('load', () => {
     fields: {
       roomName: 'empty',
       username: 'empty',
-	  theme: 'empty'
     },
   });
-	socket.on('back', function(state,roomName,username){
-		state3=state;
-		roomName3=roomName;
-		username3=username;
-	});
+
   // create our webrtc connection
   const webrtc = new SimpleWebRTC({
     // the id/element dom element that will hold "our" video
@@ -118,39 +110,26 @@ window.addEventListener('load', () => {
         postMessage(message);
       }
     });
-	socket.on('Room2', function(state,roomName,username){//所有畫面一起清除
-		state2=state;
-		roomName2=roomName;
-		username2=username;
-		//console.log(username+" "+state+" "+roomName);
-	});
   };
 
   // Register new Chat Room
   const createRoom = (roomName) => {
     // eslint-disable-next-line no-console
-    //console.info(`Creating new room: ${roomName}`);
+    console.info(`Creating new room: ${roomName}`);
     webrtc.createRoom(roomName, (err, name) => {
       formEl.form('clear');
       showChatRoom(name);
       postMessage(`${username} created chatroom`);
-	  socket.emit('roomstate','Create',roomName,username,theme);
-	  //console.log(username+" "+'Create'+" "+roomName);
-	  if(roomName3!=null){
-		console.log(roomName3);
-	  }
     });
   };
 
   // Join existing Chat Room
   const joinRoom = (roomName) => {
     // eslint-disable-next-line no-console
-    //console.log(`Joining Room: ${roomName}`);
+    console.log(`Joining Room: ${roomName}`);
     webrtc.joinRoom(roomName);
     showChatRoom(roomName);
     postMessage(`${username} joined chatroom`);
-	socket.emit('roomstate','Join',roomName,username,theme);
-	//console.log(username+" "+'join'+" "+roomName);
   };
 
   // Receive message from remote user
@@ -168,7 +147,6 @@ window.addEventListener('load', () => {
       return false;
     }
     username = $('#username').val();
-	theme = $('#theme').val();
     const roomName = $('#roomName').val().toLowerCase();
     if (event.target.id === 'create-btn') {
       createRoom(roomName);
